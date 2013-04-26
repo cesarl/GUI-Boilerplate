@@ -26,6 +26,7 @@ public:
   void					setParent(GuiComponent *parent);
   GuiComponent				*getParent() const;
   bool					isSelectable() const;
+  virtual void				select(bool val);
 protected:
   bool					visible_;
   GuiComponent				*parent_;
@@ -47,6 +48,7 @@ public:
   void					setPressAction(void (*function)(GuiComponent *gui));
   void					setSelectAction(void (*function)(GuiComponent *gui));
   void					setUnselectAction(void (*function)(GuiComponent *gui));
+  virtual void				event(ALLEGRO_EVENT *event);
 protected:
   bool					selected_;
   void					(*pressAction_)(GuiComponent *gui);
@@ -74,6 +76,32 @@ private:
   ALLEGRO_COLOR				color_;
 };
 
+///////////////
+// GuiNumber //
+///////////////
+
+class					GuiNumber : public GuiComponent
+{
+public:
+  GuiNumber(int val = 0);
+  virtual ~GuiNumber();
+  void					operator=(int val);
+  void					operator+=(int val);
+  void					operator-=(int val);
+  void					operator/=(int val);
+  void					operator*=(int val);
+  void					setFont(ALLEGRO_FONT *font);
+  void					setColor(ALLEGRO_COLOR color);
+  virtual void				draw(Vector3d *position = NULL);
+  void					updateStr();
+  int					getVal() const;
+protected:
+  int					val_;
+  ALLEGRO_FONT				*font_;
+  ALLEGRO_COLOR				color_;
+  std::string				strVal_;
+};
+
 ///////////////////////
 // GuiSelectableText //
 ///////////////////////
@@ -90,6 +118,24 @@ private:
   GuiText				text_;
 };
 
+
+/////////////////////////
+// GuiSelectableNumber //
+/////////////////////////
+
+class					GuiSelectableNumber : public GuiSelectable
+{
+public:
+  GuiSelectableNumber();
+  virtual ~GuiSelectableNumber();
+  void					setupNumber(int val, ALLEGRO_FONT *font);
+  GuiNumber				*getNumber();
+  int					getVal() const;
+  virtual void				draw(Vector3d *position = NULL);
+protected:
+  GuiNumber				nbr_;
+};
+
 ////////////////////////
 // GuiSelectableGroup //
 ////////////////////////
@@ -99,17 +145,35 @@ class					GuiSelectableGroup : public GuiSelectable
 public:
   GuiSelectableGroup();
   virtual ~GuiSelectableGroup();
-  void					pushComponent(GuiSelectable *component);
+  void					pushComponent(GuiComponent *component);
   virtual void				draw(Vector3d *position = NULL);
   void					setHorizontal(bool val);
   virtual void				event(ALLEGRO_EVENT *event);
   void					selectNext();
   void					selectPrev();
+  void					selectFirst();
 private:
   bool					horizontal_;
-  std::vector<GuiSelectable*>		list_;
-  std::vector<GuiSelectable*>::iterator	selected_;
-  typedef std::vector<GuiSelectable*>::iterator t_iter;
+  std::vector<GuiComponent*>		list_;
+  std::vector<GuiComponent*>::iterator	selected_;
+  typedef std::vector<GuiComponent*>::iterator t_iter;
+};
+
+////////////////////
+// GuiRangeNumber //
+////////////////////
+
+class					GuiRangeNumber : public GuiSelectableNumber
+{
+public:
+  GuiRangeNumber();
+  ~GuiRangeNumber();
+  void					setBounds(int min, int max);
+  virtual void				event(ALLEGRO_EVENT *event);
+  void					increment(int n);
+private:
+  int					min_;
+  int					max_;
 };
 
 #endif					// __GUI_COMPONENT_HH__

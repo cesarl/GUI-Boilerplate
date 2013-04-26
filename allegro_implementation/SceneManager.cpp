@@ -140,8 +140,7 @@ void					SceneManager::inputEvent(ALLEGRO_EVENT *event)
 
 void					SceneManager::exit()
 {
-  if (this->eventManager_)
-    this->eventManager_->pause();
+  EventManager::getInstance()->pause();
 }
 
 void					SceneManager::handleMessage(e_message type, void *data, std::string const & sceneName)

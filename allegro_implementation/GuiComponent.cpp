@@ -1,4 +1,5 @@
 #include				<iostream>
+#include				<sstream>
 #include				"GuiComponent.hh"
 
 //////////////////
@@ -54,6 +55,11 @@ bool					GuiComponent::isSelectable() const
   return this->selectable_;
 }
 
+void					GuiComponent::select(bool val)
+{
+  (void)(val);
+}
+
 ///////////////////
 // GuiSelectable //
 ///////////////////
@@ -106,6 +112,18 @@ void					GuiSelectable::setUnselectAction(void (* function)(GuiComponent *gui))
   this->unselectAction_ = function;
 }
 
+void					GuiSelectable::event(ALLEGRO_EVENT *event)
+{
+  if (event->type != ALLEGRO_EVENT_KEY_DOWN)
+    return;
+  switch (event->keyboard.keycode)
+    {
+    case ALLEGRO_KEY_ENTER:
+      this->pressed();
+      break;
+    }
+}
+
 /////////////
 // GuiText //
 /////////////
@@ -153,9 +171,90 @@ void					GuiText::setColor(ALLEGRO_COLOR color)
   this->color_ = color;
 }
 
- ///////////////////////
- // GuiSelectableText //
- ///////////////////////
+///////////////
+// GuiNumber //
+///////////////
+
+GuiNumber::GuiNumber(int val) :
+  GuiComponent(),
+  val_(val),
+  font_(NULL),
+  color_(al_map_rgb(125, 125, 125))
+{
+  this->updateStr();
+}
+
+GuiNumber::~GuiNumber()
+{}
+
+void					GuiNumber::operator=(int val)
+{
+  this->val_ = val;
+  this->updateStr();
+}
+
+void					GuiNumber::operator+=(int val)
+{
+  this->val_ += val;
+  this->updateStr();
+}
+
+void					GuiNumber::operator-=(int val)
+{
+  this->val_ -= val;
+  this->updateStr();
+}
+
+void					GuiNumber::operator*=(int val)
+{
+  this->val_ *= val;
+  this->updateStr();
+}
+
+void					GuiNumber::operator/=(int val)
+{
+  this->val_ /= val;
+  this->updateStr();
+}
+
+void					GuiNumber::setFont(ALLEGRO_FONT *font)
+{
+  this->font_ = font;
+}
+
+void					GuiNumber::draw(Vector3d *position)
+{
+  Vector3d				vec;
+
+  vec = this->position_;
+  if (position)
+    vec += *position;
+  if (!this->font_)
+    return;
+  al_draw_text(this->font_ , this->color_, vec.getX(), vec.getY(), 0, this->strVal_.c_str());
+}
+
+void					GuiNumber::setColor(ALLEGRO_COLOR color)
+{
+  this->color_ = color;
+}
+
+void					GuiNumber::updateStr()
+{
+  std::ostringstream			convert;
+
+  convert << this->val_;
+  this->strVal_ = convert.str();
+}
+
+int					GuiNumber::getVal() const
+{
+  return this->val_;
+}
+
+///////////////////////
+// GuiSelectableText //
+///////////////////////
 
 GuiSelectableText::GuiSelectableText() :
   GuiSelectable()
@@ -185,6 +284,43 @@ void					GuiSelectableText::draw(Vector3d *position)
   this->text_.draw(&vec);
 }
 
+/////////////////////////
+// GuiSelectableNumber //
+/////////////////////////
+
+GuiSelectableNumber::GuiSelectableNumber() :
+  GuiSelectable()
+{}
+
+GuiSelectableNumber::~GuiSelectableNumber()
+{}
+
+void					GuiSelectableNumber::setupNumber(int val, ALLEGRO_FONT *font)
+{
+  this->nbr_ = val;
+  this->nbr_.setFont(font);
+}
+
+GuiNumber				*GuiSelectableNumber::getNumber()
+{
+  return &(this->nbr_);
+}
+
+int					GuiSelectableNumber::getVal() const
+{
+  return this->nbr_.getVal();
+}
+
+void					GuiSelectableNumber::draw(Vector3d *position)
+{
+  Vector3d				vec;
+
+  vec = this->position_;
+  if (position)
+    vec += *position;
+  this->nbr_.draw(&vec);
+}
+
 ////////////////////////
 // GuiSelectableGroup //
 ////////////////////////
@@ -197,12 +333,13 @@ GuiSelectableGroup::GuiSelectableGroup() :
 GuiSelectableGroup::~GuiSelectableGroup()
 {}
 
-void					GuiSelectableGroup::pushComponent(GuiSelectable *component)
+void					GuiSelectableGroup::pushComponent(GuiComponent *component)
 {
   this->list_.push_back(component);
-  this->selected_ = this->list_.begin();
-  (*this->selected_)->select(true);
   component->setParent(this);
+  this->selectFirst();
+  if (this->selected_ != this->list_.end())
+    (*this->selected_)->select(true);
 }
 
 void					GuiSelectableGroup::draw(Vector3d *position)
@@ -256,6 +393,7 @@ void					GuiSelectableGroup::event(ALLEGRO_EVENT *event)
       this->selectNext();
       break;
     case ALLEGRO_KEY_ENTER:
+      this->pressed();
       break;
     }
 }
@@ -270,6 +408,8 @@ void					GuiSelectableGroup::selectNext()
   while (this->selected_ != this->list_.end() && !(*this->selected_)->isSelectable());
   if (this->selected_ == this->list_.end())
     this->selected_ = this->list_.begin();
+  if(!(*this->selected_)->isSelectable())
+    this->selectNext();
   (*this->selected_)->select(true);
 }
 
@@ -287,6 +427,64 @@ void					GuiSelectableGroup::selectPrev()
       while (this->selected_ != this->list_.begin() && !(*this->selected_)->isSelectable());
       if (this->selected_ == this->list_.end())
 	this->selected_ = --(this->list_.end());
+      if(!(*this->selected_)->isSelectable())
+	this->selectPrev();
     }
   (*this->selected_)->select(true);
+}
+
+void					GuiSelectableGroup::selectFirst()
+{
+  this->selected_ = this->list_.begin();
+  while (this->selected_ != this->list_.end() && !(*this->selected_)->isSelectable())
+    ++this->selected_;
+}
+
+////////////////////
+// GuiRangeNumber //
+////////////////////
+
+GuiRangeNumber::GuiRangeNumber() :
+  GuiSelectableNumber(),
+  min_(-2147483648),
+  max_(2147483647)
+{}
+
+GuiRangeNumber::~GuiRangeNumber()
+{}
+
+void					GuiRangeNumber::setBounds(int min, int max)
+{
+  this->min_ = min;
+  this->max_ = max;
+  if (this->nbr_.getVal() < this->min_)
+    this->nbr_ = this->min_;
+  else if (this->nbr_.getVal() > this->max_)
+    this->nbr_ = this->max_;
+  this->nbr_.updateStr();
+}
+
+void					GuiRangeNumber::event(ALLEGRO_EVENT *event)
+{
+  if (event->type != ALLEGRO_EVENT_KEY_DOWN)
+    return;
+  switch (event->keyboard.keycode)
+    {
+    case ALLEGRO_KEY_LEFT:
+      this->increment(-1);
+      break;
+    case ALLEGRO_KEY_RIGHT:
+      this->increment(1);
+      break;
+    }
+}
+
+void					GuiRangeNumber::increment(int n)
+{
+  this->nbr_ += n;
+  if (this->nbr_.getVal() < this->min_)
+    this->nbr_ = this->min_;
+  else if (this->nbr_.getVal() > this->max_)
+    this->nbr_ = this->max_;
+  this->nbr_.updateStr();
 }

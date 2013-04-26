@@ -15,10 +15,12 @@ INC		=	-I/usr/include/allegro5
 SRCS		=	EventManager.cpp \
 			SceneManager.cpp \
 			AScene.cpp \
-			SceneMenu.cpp \
 			Vector3d.cpp \
 			GuiComponent.cpp \
 			FontManager.cpp \
+			scenes/SceneMenu.cpp \
+			scenes/MainMenu.cpp \
+			scenes/NewGameMenu.cpp \
 			main.cpp
 
 OBJS		=	$(SRCS:.cpp=.o)
