@@ -6,6 +6,7 @@
 #include				"MainMenu.hh"
 #include				"NewGameMenu.hh"
 #include				"FontManager.hh"
+#include				"OptionManager.hpp"
 
 static ALLEGRO_DISPLAY			*init(int width, int height)
 {
@@ -21,18 +22,18 @@ int					main()
   ALLEGRO_DISPLAY			*display = init(64 * 20, 64 * 10);
   SceneManager				*sceneManager;
   EventManager				*eventManager;
-  // SceneMenu				menu;
-  MainMenu				mainMenu;
-  NewGameMenu				newGameMenu;
+  OptionManager				*optionManager;
 
   eventManager = EventManager::getInstance();
   sceneManager = SceneManager::getInstance();
+  optionManager = OptionManager::getInstance();
 
-  // sceneManager->add(&menu);
-  // menu.setActive(true);
-  // menu.setVisible(true);
-  // menu.setDisplay(display);
-  // menu.setName("menu");
+  optionManager->create<int>("nbHuman", 3);
+  optionManager->create<int>("nbPnj", 2);
+  optionManager->create<std::string>("level", "");
+
+  MainMenu				mainMenu;
+  NewGameMenu				newGameMenu;
 
   sceneManager->add(&mainMenu);
   mainMenu.setActive(true);

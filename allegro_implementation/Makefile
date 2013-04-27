@@ -21,6 +21,7 @@ SRCS		=	EventManager.cpp \
 			scenes/SceneMenu.cpp \
 			scenes/MainMenu.cpp \
 			scenes/NewGameMenu.cpp \
+			Option.cpp \
 			main.cpp
 
 OBJS		=	$(SRCS:.cpp=.o)

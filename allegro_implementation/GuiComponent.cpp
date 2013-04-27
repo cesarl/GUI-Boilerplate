@@ -9,7 +9,8 @@
 GuiComponent::GuiComponent() :
   visible_(true),
   parent_(NULL),
-  selectable_(false)
+  selectable_(false),
+  option_(NULL)
 {}
 
 GuiComponent::~GuiComponent()
@@ -59,6 +60,17 @@ void					GuiComponent::select(bool val)
 {
   (void)(val);
 }
+
+void					GuiComponent::attachOption(Option *option)
+{
+  this->option_ = option;
+}
+
+void					GuiComponent::saveOptionValue()
+{}
+
+void					GuiComponent::importOptionValue()
+{}
 
 ///////////////////
 // GuiSelectable //
@@ -133,7 +145,8 @@ GuiText::GuiText(std::string const & val) :
   val_(val),
   font_(NULL),
   color_(al_map_rgb(125, 125, 125))
-{}
+{
+}
 
 
 GuiText::~GuiText()
@@ -142,11 +155,13 @@ GuiText::~GuiText()
 void					GuiText::operator=(std::string const & str)
 {
   this->val_ = str;
+  this->saveOptionValue();
 }
 
 void					GuiText::operator+=(std::string const & str)
 {
   this->val_ += str;
+  this->saveOptionValue();
 }
 
 void					GuiText::setFont(ALLEGRO_FONT *font)
@@ -171,6 +186,26 @@ void					GuiText::setColor(ALLEGRO_COLOR color)
   this->color_ = color;
 }
 
+void					GuiText::saveOptionValue()
+{
+  if (!this->option_)
+    return;
+  OptionManager::getInstance()->setOption<std::string>(this->option_->getKey(), this->val_);
+}
+
+void					GuiText::importOptionValue()
+{
+  OptionValue<std::string>		*value;
+
+  if (!this->option_)
+    return;
+  value = dynamic_cast<OptionValue<std::string>*>(this->option_);
+  if (!value)
+    return;
+  value->setValue(this->val_);
+}
+
+
 ///////////////
 // GuiNumber //
 ///////////////
@@ -191,30 +226,35 @@ void					GuiNumber::operator=(int val)
 {
   this->val_ = val;
   this->updateStr();
+  this->saveOptionValue();
 }
 
 void					GuiNumber::operator+=(int val)
 {
   this->val_ += val;
   this->updateStr();
+  this->saveOptionValue();
 }
 
 void					GuiNumber::operator-=(int val)
 {
   this->val_ -= val;
   this->updateStr();
+  this->saveOptionValue();
 }
 
 void					GuiNumber::operator*=(int val)
 {
   this->val_ *= val;
   this->updateStr();
+  this->saveOptionValue();
 }
 
 void					GuiNumber::operator/=(int val)
 {
   this->val_ /= val;
   this->updateStr();
+  this->saveOptionValue();
 }
 
 void					GuiNumber::setFont(ALLEGRO_FONT *font)
@@ -252,6 +292,25 @@ int					GuiNumber::getVal() const
   return this->val_;
 }
 
+void					GuiNumber::saveOptionValue()
+{
+  if (!this->option_)
+    return;
+  OptionManager::getInstance()->setOption<int>(this->option_->getKey(), this->val_);
+}
+
+void					GuiNumber::importOptionValue()
+{
+  OptionValue<int>			*value;
+
+  if (!this->option_)
+    return;
+  value = dynamic_cast<OptionValue<int>*>(this->option_);
+  if (!value)
+    return;
+  value->setValue(this->val_);
+}
+
 ///////////////////////
 // GuiSelectableText //
 ///////////////////////
@@ -282,6 +341,25 @@ void					GuiSelectableText::draw(Vector3d *position)
   if (position)
     vec += *position;
   this->text_.draw(&vec);
+}
+
+void					GuiSelectableText::attachOption(Option *option)
+{
+  this->text_.attachOption(option);
+}
+
+void					GuiSelectableText::select(bool val)
+{
+  this->selected_ = val;
+  if (val && this->selectAction_)
+    {
+      this->selectAction_(this);
+      this->text_.saveOptionValue();
+    }
+  if (!val && this->unselectAction_)
+    {
+      this->unselectAction_(this);
+    }
 }
 
 /////////////////////////
@@ -321,6 +399,25 @@ void					GuiSelectableNumber::draw(Vector3d *position)
   this->nbr_.draw(&vec);
 }
 
+void					GuiSelectableNumber::attachOption(Option *option)
+{
+  this->nbr_.attachOption(option);
+}
+
+void					GuiSelectableNumber::select(bool val)
+{
+  this->selected_ = val;
+  if (val && this->selectAction_)
+    {
+      this->selectAction_(this);
+      this->nbr_.saveOptionValue();
+    }
+  if (!val && this->unselectAction_)
+    {
+      this->unselectAction_(this);
+    }
+}
+
 ////////////////////////
 // GuiSelectableGroup //
 ////////////////////////
@@ -340,6 +437,8 @@ void					GuiSelectableGroup::pushComponent(GuiComponent *component)
   this->selectFirst();
   if (this->selected_ != this->list_.end())
     (*this->selected_)->select(true);
+  if (component->isSelectable() && this->option_)
+    component->attachOption(this->option_);
 }
 
 void					GuiSelectableGroup::draw(Vector3d *position)
@@ -488,3 +587,4 @@ void					GuiRangeNumber::increment(int n)
     this->nbr_ = this->max_;
   this->nbr_.updateStr();
 }
+

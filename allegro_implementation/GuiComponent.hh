@@ -8,6 +8,7 @@
 #include				<allegro5/allegro_font.h>
 #include				<allegro5/allegro_ttf.h>
 #include				"Vector3d.hh"
+#include				"OptionManager.hpp"
 
 //////////////////
 // GuiComponent //
@@ -27,10 +28,14 @@ public:
   GuiComponent				*getParent() const;
   bool					isSelectable() const;
   virtual void				select(bool val);
+  virtual void				attachOption(Option *option);
+  virtual void				saveOptionValue();
+  virtual void				importOptionValue();
 protected:
   bool					visible_;
   GuiComponent				*parent_;
   bool					selectable_;
+  Option				*option_;
   Vector3d				position_;
 };
 
@@ -70,6 +75,8 @@ public:
   void					setFont(ALLEGRO_FONT *font);
   void					setColor(ALLEGRO_COLOR color);
   virtual void				draw(Vector3d *position = NULL);
+  virtual void				saveOptionValue();
+  virtual void				importOptionValue();
 private:
   std::string				val_;
   ALLEGRO_FONT				*font_;
@@ -95,6 +102,8 @@ public:
   virtual void				draw(Vector3d *position = NULL);
   void					updateStr();
   int					getVal() const;
+  virtual void				saveOptionValue();
+  virtual void				importOptionValue();
 protected:
   int					val_;
   ALLEGRO_FONT				*font_;
@@ -114,6 +123,8 @@ public:
   void					setupText(std::string const & val, ALLEGRO_FONT *font);
   GuiText				*getText();
   virtual void				draw(Vector3d *position = NULL);
+  virtual void				attachOption(Option *option);
+  virtual void				select(bool val);
 private:
   GuiText				text_;
 };
@@ -132,6 +143,8 @@ public:
   GuiNumber				*getNumber();
   int					getVal() const;
   virtual void				draw(Vector3d *position = NULL);
+  virtual void				attachOption(Option *option);
+  virtual void				select(bool val);
 protected:
   GuiNumber				nbr_;
 };
