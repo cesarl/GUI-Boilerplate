@@ -18,9 +18,11 @@ SRCS		=	EventManager.cpp \
 			Vector3d.cpp \
 			GuiComponent.cpp \
 			FontManager.cpp \
+			ScoreManager.cpp \
 			scenes/SceneMenu.cpp \
 			scenes/MainMenu.cpp \
 			scenes/NewGameMenu.cpp \
+			scenes/ScoreMenu.cpp \
 			Option.cpp \
 			main.cpp
 

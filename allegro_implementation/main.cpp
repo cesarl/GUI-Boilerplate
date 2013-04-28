@@ -5,7 +5,9 @@
 #include				"SceneMenu.hh"
 #include				"MainMenu.hh"
 #include				"NewGameMenu.hh"
+#include				"ScoreMenu.hh"
 #include				"FontManager.hh"
+#include				"ScoreManager.hh"
 #include				"OptionManager.hpp"
 
 static ALLEGRO_DISPLAY			*init(int width, int height)
@@ -34,8 +36,9 @@ int					main()
 
   MainMenu				mainMenu;
   NewGameMenu				newGameMenu;
+  ScoreMenu				scoreMenu;
 
-  sceneManager->add(&mainMenu);
+  sceneManager->add(&mainMenu, LOW);
   mainMenu.setActive(true);
   mainMenu.setVisible(true);
   mainMenu.setDisplay(display);
@@ -46,6 +49,12 @@ int					main()
   newGameMenu.setVisible(false);
   newGameMenu.setDisplay(display);
   newGameMenu.setName("newGameMenu");
+
+  sceneManager->add(&scoreMenu);
+  scoreMenu.setActive(false);
+  scoreMenu.setVisible(false);
+  scoreMenu.setDisplay(display);
+  scoreMenu.setName("scoreMenu");
 
   eventManager->play();
   al_destroy_display(display);

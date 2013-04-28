@@ -10,7 +10,8 @@ GuiComponent::GuiComponent() :
   visible_(true),
   parent_(NULL),
   selectable_(false),
-  option_(NULL)
+  option_(NULL),
+  color_(al_map_rgb(150, 150, 150))
 {}
 
 GuiComponent::~GuiComponent()
@@ -72,6 +73,21 @@ void					GuiComponent::saveOptionValue()
 void					GuiComponent::importOptionValue()
 {}
 
+void					GuiComponent::setColor(ALLEGRO_COLOR color)
+{
+  this->color_ = color;
+}
+
+void					GuiComponent::setId(int id)
+{
+  this->id_ = id;
+}
+
+int					GuiComponent::getId() const
+{
+  return this->id_;
+}
+
 ///////////////////
 // GuiSelectable //
 ///////////////////
@@ -80,7 +96,9 @@ GuiSelectable::GuiSelectable() :
   GuiComponent(),
   selected_(false),
   pressAction_(NULL),
-  selectAction_(NULL)
+  selectAction_(NULL),
+  unselectAction_(NULL),
+  deleteAction_(NULL)
 {
   this->selectable_ = true;
 }
@@ -124,6 +142,11 @@ void					GuiSelectable::setUnselectAction(void (* function)(GuiComponent *gui))
   this->unselectAction_ = function;
 }
 
+void					GuiSelectable::setDeleteAction(void (* function)(GuiComponent *gui))
+{
+  this->deleteAction_ = function;
+}
+
 void					GuiSelectable::event(ALLEGRO_EVENT *event)
 {
   if (event->type != ALLEGRO_EVENT_KEY_DOWN)
@@ -143,8 +166,7 @@ void					GuiSelectable::event(ALLEGRO_EVENT *event)
 GuiText::GuiText(std::string const & val) :
   GuiComponent(),
   val_(val),
-  font_(NULL),
-  color_(al_map_rgb(125, 125, 125))
+  font_(NULL)
 {
 }
 
@@ -181,11 +203,6 @@ void					GuiText::draw(Vector3d *position)
   al_draw_text(this->font_ , this->color_, vec.getX(), vec.getY(), 0, this->val_.c_str());
 }
 
-void					GuiText::setColor(ALLEGRO_COLOR color)
-{
-  this->color_ = color;
-}
-
 void					GuiText::saveOptionValue()
 {
   if (!this->option_)
@@ -213,8 +230,7 @@ void					GuiText::importOptionValue()
 GuiNumber::GuiNumber(int val) :
   GuiComponent(),
   val_(val),
-  font_(NULL),
-  color_(al_map_rgb(125, 125, 125))
+  font_(NULL)
 {
   this->updateStr();
 }
@@ -272,11 +288,6 @@ void					GuiNumber::draw(Vector3d *position)
   if (!this->font_)
     return;
   al_draw_text(this->font_ , this->color_, vec.getX(), vec.getY(), 0, this->strVal_.c_str());
-}
-
-void					GuiNumber::setColor(ALLEGRO_COLOR color)
-{
-  this->color_ = color;
 }
 
 void					GuiNumber::updateStr()
@@ -362,6 +373,11 @@ void					GuiSelectableText::select(bool val)
     }
 }
 
+void					GuiSelectableText::setColor(ALLEGRO_COLOR color)
+{
+  this->text_.setColor(color);
+}
+
 /////////////////////////
 // GuiSelectableNumber //
 /////////////////////////
@@ -418,6 +434,11 @@ void					GuiSelectableNumber::select(bool val)
     }
 }
 
+void					GuiSelectableNumber::setColor(ALLEGRO_COLOR color)
+{
+  this->nbr_.setColor(color);
+}
+
 ////////////////////////
 // GuiSelectableGroup //
 ////////////////////////
@@ -430,12 +451,36 @@ GuiSelectableGroup::GuiSelectableGroup() :
 GuiSelectableGroup::~GuiSelectableGroup()
 {}
 
+void					GuiSelectableGroup::clear()
+{
+  t_iter				it;
+
+  it = this->sellist_.begin();
+  while (it != this->sellist_.end())
+    {
+      delete *it;
+      ++it;
+    }
+  this->sellist_.clear();
+  this->selected_ = this->sellist_.end();
+  it = this->list_.begin();
+  while (it != this->list_.end())
+    {
+      delete *it;
+      ++it;
+    }
+  this->list_.clear();
+}
+
 void					GuiSelectableGroup::pushComponent(GuiComponent *component)
 {
-  this->list_.push_back(component);
+  if (component->isSelectable())
+    this->sellist_.push_back(component);
+  else
+    this->list_.push_back(component);
   component->setParent(this);
   this->selectFirst();
-  if (this->selected_ != this->list_.end())
+  if (this->selected_ != this->sellist_.end())
     (*this->selected_)->select(true);
   if (component->isSelectable() && this->option_)
     component->attachOption(this->option_);
@@ -449,11 +494,23 @@ void					GuiSelectableGroup::draw(Vector3d *position)
   vec = this->position_;
   if (position)
     vec += *position;
-  it = this->list_.begin();
-  while (it != this->list_.end())
+  if (this->list_.size() > 0)
     {
-      (*it)->draw(&vec);
-      ++it;
+      it = this->list_.begin();
+      while (it != this->list_.end())
+	{
+	  (*it)->draw(&vec);
+	  ++it;
+	}
+    }
+  if (this->sellist_.size() > 0)
+    {
+      it = this->sellist_.begin();
+      while (it != this->sellist_.end())
+	{
+	  (*it)->draw(&vec);
+	  ++it;
+	}
     }
 }
 
@@ -466,7 +523,9 @@ void					GuiSelectableGroup::event(ALLEGRO_EVENT *event)
 {
   t_iter				it;
 
-  (*this->selected_)->event(event);
+  if (this->selected_ != this->sellist_.end()
+      && (*this->selected_)->isSelectable())
+    (*this->selected_)->event(event);
   if (event->type != ALLEGRO_EVENT_KEY_DOWN)
     return;
   switch (event->keyboard.keycode)
@@ -494,49 +553,81 @@ void					GuiSelectableGroup::event(ALLEGRO_EVENT *event)
     case ALLEGRO_KEY_ENTER:
       this->pressed();
       break;
+    case ALLEGRO_KEY_BACKSPACE:
+      if (this->deleteAction_)
+	this->deleteAction_(this);
+      break;
     }
 }
 
 void					GuiSelectableGroup::selectNext()
 {
-  (*this->selected_)->select(false);
-  do
+  if (this->sellist_.size() == 0)
     {
-      ++this->selected_;
+      this->selected_ = this->sellist_.end();
+      return;
     }
-  while (this->selected_ != this->list_.end() && !(*this->selected_)->isSelectable());
-  if (this->selected_ == this->list_.end())
-    this->selected_ = this->list_.begin();
-  if(!(*this->selected_)->isSelectable())
-    this->selectNext();
+  if (this->selected_ != this->sellist_.end())
+    (*this->selected_)->select(false);
+  ++this->selected_;
+  if (this->selected_ == this->sellist_.end())
+    this->selected_ = this->sellist_.begin();
   (*this->selected_)->select(true);
 }
 
 void					GuiSelectableGroup::selectPrev()
 {
-  (*this->selected_)->select(false);
-  if (this->selected_ == this->list_.begin())
-    this->selected_ = --(this->list_.end());
-  else
+  if (this->sellist_.size() == 0)
     {
-      do
-	{
-	  --this->selected_;
-	}
-      while (this->selected_ != this->list_.begin() && !(*this->selected_)->isSelectable());
-      if (this->selected_ == this->list_.end())
-	this->selected_ = --(this->list_.end());
-      if(!(*this->selected_)->isSelectable())
-	this->selectPrev();
+      this->selected_ = this->sellist_.end();
+      return;
     }
+  if (this->selected_ != this->sellist_.end())
+    (*this->selected_)->select(false);
+  if (this->selected_ == this->sellist_.begin())
+    {
+      this->selected_ = this->sellist_.end();
+      --this->selected_;
+    }
+  else
+    --this->selected_;
   (*this->selected_)->select(true);
 }
 
 void					GuiSelectableGroup::selectFirst()
 {
-  this->selected_ = this->list_.begin();
-  while (this->selected_ != this->list_.end() && !(*this->selected_)->isSelectable())
+  if (this->sellist_.size() == 0)
+    {
+      this->selected_ = this->sellist_.end();
+      return;
+    }
+  this->selected_ = this->sellist_.begin();
+  while (this->selected_ != this->sellist_.end() && !(*this->selected_)->isSelectable())
     ++this->selected_;
+}
+
+void					GuiSelectableGroup::setColor(ALLEGRO_COLOR color)
+{
+  t_iter				it;
+
+  if (this->list_.size() > 0)
+    {
+      it = this->list_.begin();
+      while (it != this->list_.end())
+	{
+	  (*it)->setColor(color);
+	  ++it;
+	}
+    }
+  if (this->sellist_.size() > 0)
+    {
+      it = this->sellist_.begin();
+      while (it != this->sellist_.end())
+	{
+	  (*it)->setColor(color);
+	  ++it;
+	}
+    }
 }
 
 ////////////////////

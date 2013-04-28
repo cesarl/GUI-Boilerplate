@@ -38,18 +38,20 @@ FontManager				*FontManager::getInstance()
 ALLEGRO_FONT				*FontManager::load(std::string const & path, int size)
 {
   ALLEGRO_FONT				*tmp;
-  std::stringstream			key;
+  std::string				key;
 
-  key << path << "-" << size;
+  key = path;
+  key += "-";
+  key += size;
   if ((tmp = this->get(path, size)))
     return tmp;
   tmp = al_load_font(path.c_str(), size, 0);
   if (!tmp)
     {
-      std::cerr << "Error - FontManager : loading " << key.str() << " failed" << std::endl;
+      std::cerr << "Error - FontManager : loading " << key << " failed" << std::endl;
       return NULL;
     }
-  this->collection_.insert(t_pair(key.str(), tmp));
+  this->collection_.insert(t_pair(key, tmp));
   return tmp;
 }
 
@@ -81,7 +83,7 @@ ALLEGRO_FONT				*FontManager::get(std::string const & path, int size)
   key = path;
   key += "-";
   key += size;
-  it = this->collection_.find(path);
+  it = this->collection_.find(key);
   if (it != this->collection_.end())
     return it->second;
   return NULL;

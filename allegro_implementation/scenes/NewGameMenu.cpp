@@ -126,7 +126,6 @@ NewGameMenu::NewGameMenu()
 	  // ajout d'un champ number de type range
 	  r = new GuiRangeNumber;
 	  r->setBounds(1, 2);
-	  std::cout << "human" << std::endl;
 	  r->attachOption(OptionManager::getInstance()->getOption<int>("nbHuman"));
 	  r->setPosition(Vector3d(50, margin, 0));
 	  r->setupNumber(1, FontManager::getInstance()->load("assets/fonts/LilitaOne-Regular.ttf", 30));
@@ -149,7 +148,6 @@ NewGameMenu::NewGameMenu()
 	  // nombre de pnj
 	  // ajout d'un champ number de type range
 	  r = new GuiRangeNumber;
-	  std::cout << "pnj" << std::endl;
 	  r->attachOption(OptionManager::getInstance()->getOption<int>("nbPnj"));
 	  r->setBounds(1, 10000);
 	  r->setPosition(Vector3d(50, margin, 0));

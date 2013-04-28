@@ -31,12 +31,17 @@ public:
   virtual void				attachOption(Option *option);
   virtual void				saveOptionValue();
   virtual void				importOptionValue();
+  virtual void				setColor(ALLEGRO_COLOR color);
+  void					setId(int id);
+  int					getId() const;
 protected:
   bool					visible_;
   GuiComponent				*parent_;
   bool					selectable_;
   Option				*option_;
+  ALLEGRO_COLOR				color_;
   Vector3d				position_;
+  int					id_;
 };
 
 ///////////////////
@@ -53,12 +58,14 @@ public:
   void					setPressAction(void (*function)(GuiComponent *gui));
   void					setSelectAction(void (*function)(GuiComponent *gui));
   void					setUnselectAction(void (*function)(GuiComponent *gui));
+  void					setDeleteAction(void (*function)(GuiComponent *gui));
   virtual void				event(ALLEGRO_EVENT *event);
 protected:
   bool					selected_;
   void					(*pressAction_)(GuiComponent *gui);
   void					(*selectAction_)(GuiComponent *gui);
   void					(*unselectAction_)(GuiComponent *gui);
+  void					(*deleteAction_)(GuiComponent *gui);
 };
 
 /////////////
@@ -73,14 +80,12 @@ public:
   void					operator=(std::string const & str);
   void					operator+=(std::string const & str);
   void					setFont(ALLEGRO_FONT *font);
-  void					setColor(ALLEGRO_COLOR color);
   virtual void				draw(Vector3d *position = NULL);
   virtual void				saveOptionValue();
   virtual void				importOptionValue();
 private:
   std::string				val_;
   ALLEGRO_FONT				*font_;
-  ALLEGRO_COLOR				color_;
 };
 
 ///////////////
@@ -98,7 +103,6 @@ public:
   void					operator/=(int val);
   void					operator*=(int val);
   void					setFont(ALLEGRO_FONT *font);
-  void					setColor(ALLEGRO_COLOR color);
   virtual void				draw(Vector3d *position = NULL);
   void					updateStr();
   int					getVal() const;
@@ -107,7 +111,6 @@ public:
 protected:
   int					val_;
   ALLEGRO_FONT				*font_;
-  ALLEGRO_COLOR				color_;
   std::string				strVal_;
 };
 
@@ -125,6 +128,7 @@ public:
   virtual void				draw(Vector3d *position = NULL);
   virtual void				attachOption(Option *option);
   virtual void				select(bool val);
+  virtual void				setColor(ALLEGRO_COLOR color);
 private:
   GuiText				text_;
 };
@@ -145,6 +149,7 @@ public:
   virtual void				draw(Vector3d *position = NULL);
   virtual void				attachOption(Option *option);
   virtual void				select(bool val);
+  virtual void				setColor(ALLEGRO_COLOR color);
 protected:
   GuiNumber				nbr_;
 };
@@ -158,6 +163,7 @@ class					GuiSelectableGroup : public GuiSelectable
 public:
   GuiSelectableGroup();
   virtual ~GuiSelectableGroup();
+  void					clear();
   void					pushComponent(GuiComponent *component);
   virtual void				draw(Vector3d *position = NULL);
   void					setHorizontal(bool val);
@@ -165,8 +171,10 @@ public:
   void					selectNext();
   void					selectPrev();
   void					selectFirst();
+  virtual void				setColor(ALLEGRO_COLOR color);
 private:
   bool					horizontal_;
+  std::vector<GuiComponent*>		sellist_;
   std::vector<GuiComponent*>		list_;
   std::vector<GuiComponent*>::iterator	selected_;
   typedef std::vector<GuiComponent*>::iterator t_iter;

@@ -56,7 +56,6 @@ public:
   template				<typename T>
   void					setOption(std::string key, const T & value)
   {
-    std::cout << key << " " << value << std::endl;
     t_iter				it;
 
     it = this->list_.find(key);
