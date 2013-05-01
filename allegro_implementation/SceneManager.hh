@@ -32,7 +32,7 @@ public:
   void					setPriority(AScene *scene, int priority);
   void					setEventManager(EventManager * eventManager);
   void					updateEvent(ALLEGRO_EVENT *event);
-  void					drawEvent(ALLEGRO_EVENT *event);
+  void					drawEvent(_EVENT *event);
   void					inputEvent(ALLEGRO_EVENT *event);
   void					exit();
   void					handleMessage(e_message type, void *data, std::string const & sceneName);
