@@ -3,13 +3,13 @@
 
 #include				<string>
 #include				<vector>
-#include				<Color.hpp>
 #include				<Text.hpp>
 #include				<GameClock.hpp>
 #include				<Input.hpp>
 #include				"Vector3d.hh"
 #include				"OptionManager.hpp"
 #include				"TextDrawer.hh"
+#include				"Text.hh"
 
 //////////////////
 // GuiComponent //
@@ -34,7 +34,7 @@ public:
   virtual void				attachOption(Option *option);
   virtual void				saveOptionValue();
   virtual void				importOptionValue();
-  virtual void				setColor(gdl::Color const & color);
+  virtual void				setColor(Color const & color);
   virtual void				setFont(std::string const & font);
   virtual void				setSize(int size);
 protected:
@@ -42,12 +42,11 @@ protected:
   GuiComponent				*parent_;
   bool					selectable_;
   Option				*option_;
-  gdl::Color				color_;
+  Color					color_;
   std::string				font_;
   int					size_;
   Vector3d				position_;
   int					id_;
-  TextDrawer				*drawer_;
 };
 
 ///////////////////
@@ -88,11 +87,11 @@ public:
   virtual void				draw(Vector3d *position = NULL);
   virtual void				saveOptionValue();
   virtual void				importOptionValue();
-  virtual void				setColor(gdl::Color const & color);
+  virtual void				setColor(Color const & color);
   virtual void				setFont(std::string const & font);
   virtual void				setSize(int size);
 protected:
-  gdl::Text				text_;
+  Primitive::TextBlock			text_;
   std::string				val_;
 };
 
@@ -133,7 +132,7 @@ public:
   virtual void				draw(Vector3d *position = NULL);
   virtual void				attachOption(Option *option);
   virtual void				select(bool val);
-  virtual void				setColor(gdl::Color const & color);
+  virtual void				setColor(Color const & color);
   virtual void				setFont(std::string const & font);
   virtual void				setSize(int size);
 private:
@@ -155,7 +154,7 @@ public:
   virtual void				draw(Vector3d *position = NULL);
   virtual void				attachOption(Option *option);
   virtual void				select(bool val);
-  virtual void				setColor(gdl::Color const & color);
+  virtual void				setColor(Color const & color);
   virtual void				setFont(std::string const & font);
   virtual void				setSize(int size);
 protected:
@@ -179,7 +178,7 @@ public:
   void					selectFirst();
   virtual void				draw(Vector3d *position = NULL);
   virtual void				update(gdl::GameClock const &, gdl::Input &);
-  virtual void				setColor(gdl::Color const & color);
+  virtual void				setColor(Color const & color);
 private:
   bool					horizontal_;
   std::vector<GuiComponent*>		sellist_;

@@ -7,7 +7,7 @@
 #include				<string>
 #include				<cstring>
 #include				<map>
-#include				<Color.hpp>
+#include				<MyColor.hpp>
 #include				"GuiComponent.hh"
 
 typedef struct				s_score

@@ -4,42 +4,42 @@ static inline void			selectMenuItem(GuiComponent *c)
 {
   GuiSelectableText			*t = dynamic_cast<GuiSelectableText*>(c);
 
-  t->getText()->setColor(gdl::Color(255, 0, 255));
+  t->getText()->setColor(Color(1.0f, 0.0f, 1.0f));
 }
 
 static inline void			unselectMenuItem(GuiComponent *c)
 {
   GuiSelectableText			*t = dynamic_cast<GuiSelectableText*>(c);
 
-  t->getText()->setColor(gdl::Color(125, 125, 125));
+  t->getText()->setColor(Color(0, 0, 0));
 }
 
 static inline void			selectSubMenuItem(GuiComponent *c)
 {
   GuiSelectableText			*t = dynamic_cast<GuiSelectableText*>(c);
 
-  t->getText()->setColor(gdl::Color(120, 120, 50));
+  t->getText()->setColor(Color(1.0f, 1.0f, 0.5f));
 }
 
 static inline void			unselectSubMenuItem(GuiComponent *c)
 {
   GuiSelectableText			*t = dynamic_cast<GuiSelectableText*>(c);
 
-  t->getText()->setColor(gdl::Color(125, 125, 125));
+  t->getText()->setColor(Color(0, 0, 0));
 }
 
 static inline void			selectRangeMenuItem(GuiComponent *c)
 {
   GuiRangeNumber			*t = dynamic_cast<GuiRangeNumber*>(c);
 
-  t->getNumber()->setColor(gdl::Color(120, 120, 50));
+  t->getNumber()->setColor(Color(1.0f, 0, 1.0f));
 }
 
 static inline void			unselectRangeMenuItem(GuiComponent *c)
 {
   GuiRangeNumber			*t = dynamic_cast<GuiRangeNumber*>(c);
 
-  t->getNumber()->setColor(gdl::Color(125, 125, 125));
+  t->getNumber()->setColor(Color(0, 0, 0));
 }
 
 static inline void			pressCancelMenuItem(GuiComponent *c)
@@ -82,10 +82,11 @@ static inline GuiSelectableGroup	*createLevelMenu()
   for (int i = 0; i < 6; ++i)
     {
       t = new GuiSelectableText;
+      t->setFont("assets/imgs/font.png");
       t->setPosition(Vector3d(margin, 50, 0));
-      margin += levels[i].size() * 20;
+      margin += levels[i].size() * 60;
       t->setText(levels[i]);
-      t->setSize(30);
+      t->setSize(80);
       t->setSelectAction(selectSubMenuItem);
       t->setUnselectAction(unselectSubMenuItem);
       g->pushComponent(t);
@@ -102,7 +103,7 @@ NewGameMenu::NewGameMenu()
   GuiSelectableGroup			*g;
   int					margin = 0;
 
-  this->gui_.setPosition(Vector3d(50, 50, 0));
+  this->gui_.setPosition(Vector3d(-700, 500, 1000));
   for (int i = 0; i < 5; ++i)
     {
       switch (i)
@@ -112,40 +113,45 @@ NewGameMenu::NewGameMenu()
 	  // creation d'un groupe de text selectionnable
 	  // et ajout des champs
 	  g = createLevelMenu();
-	  g->setPosition(Vector3d(50, margin, 0));
 
 	  // entete du champs level
 	  // texte non selectionnable
       	  st = new GuiText;
-      	  st->setPosition(Vector3d(50, margin, 0));
+	  st->setFont("assets/imgs/font.png");
 	  *st = text[i];
-	  st->setSize(40);
+	  st->setSize(100);
+
+      	  st->setPosition(Vector3d(50, -margin, 0));
+	  margin += 150;
+	  g->setPosition(Vector3d(50, -margin, 0));
 
 	  // ajout de l'entete et du groupe de text
 	  this->gui_.pushComponent(st);
 	  this->gui_.pushComponent(g);
-	  margin += 50 + 50;
+	  margin += 150;
 	  break;
 	case 1:
 	  // nombre de joueur humain
 	  // entete
       	  st = new GuiText;
-      	  st->setPosition(Vector3d(50, margin, 0));
+      	  st->setPosition(Vector3d(50, -margin, 0));
+	  st->setFont("assets/imgs/font.png");
 	  *st = text[i];
-	  margin += 50;
-	  st->setSize(40);
+	  margin += 150;
+	  st->setSize(100);
 
 	  // nombre de joueur humain
 	  // ajout d'un champ number de type range
 	  r = new GuiRangeNumber;
 	  r->setBounds(1, 2);
 	  r->attachOption(OptionManager::getInstance()->getOption<int>("nbHuman"));
-	  r->setPosition(Vector3d(50, margin, 0));
+	  r->setPosition(Vector3d(50, -margin, 0));
+	  r->setFont("assets/imgs/font.png");
 	  r->setNbr(1);
-	  r->setSize(30);
+	  r->setSize(130);
 	  r->setSelectAction(selectRangeMenuItem);
 	  r->setUnselectAction(unselectRangeMenuItem);
-	  margin += 50;
+	  margin += 150;
 
 	  this->gui_.pushComponent(st);
 	  this->gui_.pushComponent(r);
@@ -154,22 +160,24 @@ NewGameMenu::NewGameMenu()
 	  // nombre de pnj
 	  // entete
       	  st = new GuiText;
-      	  st->setPosition(Vector3d(50, margin, 0));
+      	  st->setPosition(Vector3d(50, -margin, 0));
+	  st->setFont("assets/imgs/font.png");
 	  *st = text[i];
-	  st->setSize(40);
-	  margin += 50;
+	  st->setSize(100);
+	  margin += 150;
 
 	  // nombre de pnj
 	  // ajout d'un champ number de type range
 	  r = new GuiRangeNumber;
 	  r->attachOption(OptionManager::getInstance()->getOption<int>("nbPnj"));
 	  r->setBounds(1, 10000);
-	  r->setPosition(Vector3d(50, margin, 0));
+	  r->setPosition(Vector3d(50, -margin, 0));
+	  r->setFont("assets/imgs/font.png");
 	  r->setNbr(1);
-	  r->setSize(30);
+	  r->setSize(130);
 	  r->setSelectAction(selectRangeMenuItem);
 	  r->setUnselectAction(unselectRangeMenuItem);
-	  margin += 50;
+	  margin += 150;
 
 	  this->gui_.pushComponent(st);
 	  this->gui_.pushComponent(r);
@@ -178,22 +186,24 @@ NewGameMenu::NewGameMenu()
 	  // validation du menu
 	  // bouton de type text selectionnable
       	  t = new GuiSelectableText;
-      	  t->setPosition(Vector3d(50, margin, 0));
+      	  t->setPosition(Vector3d(50, -margin, 0));
+	  t->setFont("assets/imgs/font.png");
       	  t->setText(text[i]);
-	  t->setSize(40);
+	  t->setSize(100);
       	  t->setSelectAction(selectMenuItem);
       	  t->setUnselectAction(unselectMenuItem);
       	  t->setPressAction(pressStartMenuItem);
-	  margin += 50;
+	  margin += 150;
 	  this->gui_.pushComponent(t);
 	  break;
 	case 4:
 	  // annulation du menu
 	  // bouton de type text selectionna
       	  t = new GuiSelectableText;
-      	  t->setPosition(Vector3d(50, margin, 0));
+      	  t->setPosition(Vector3d(50, -margin, 0));
+	  t->setFont("assets/imgs/font.png");
       	  t->setText(text[i]);
-	  t->setSize(40);
+	  t->setSize(100);
       	  t->setSelectAction(selectMenuItem);
       	  t->setUnselectAction(unselectMenuItem);
       	  t->setPressAction(pressCancelMenuItem);

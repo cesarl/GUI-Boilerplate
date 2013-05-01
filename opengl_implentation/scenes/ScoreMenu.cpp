@@ -14,7 +14,7 @@ ScoreMenu::ScoreMenu()
   // scoreManager->registerScore(2345, "Julie");
   // scoreManager->registerScore(3456, "Marcus");
   this->gui_ = scoreManager->getGuiList();
-  this->gui_->setPosition(Vector3d(50, 50, 0));
+  this->gui_->setPosition(Vector3d(-700, 200, 1000));
 }
 
 ScoreMenu::~ScoreMenu()

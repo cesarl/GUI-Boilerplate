@@ -171,11 +171,11 @@ inline void				selectScore(GuiComponent *c)
   y = pos.getY();
   if (g)
     {
-      g->getPosition().setY(100 - y);
+      g->getPosition().setY(200 - y);
     }
   if (gg)
     {
-      gg->setColor(gdl::Color(255, 0, 255));
+      gg->setColor(Color(1.0f, 0, 1.0f));
     }
 }
 
@@ -185,7 +185,7 @@ inline void				unselectScore(GuiComponent *c)
 
   if (g)
     {
-      g->setColor(gdl::Color(0, 0, 0));
+      g->setColor(Color(0, 0, 0));
     }
 }
 
@@ -195,7 +195,7 @@ inline void				selectExit(GuiComponent *c)
 
   if (g)
     {
-      g->setColor(gdl::Color(0,255,255));
+      g->setColor(Color(0,255,255));
     }
 }
 
@@ -205,7 +205,7 @@ inline void				unselectExit(GuiComponent *c)
 
   if (g)
     {
-      g->setColor(gdl::Color(0, 0, 0));
+      g->setColor(Color(0, 0, 0));
     }
 }
 
@@ -250,8 +250,9 @@ GuiSelectableGroup			*ScoreManager::getGuiList()
 
   exit = new GuiSelectableText;
   exit->setText("Exit");
-  exit->setSize(40);
-  exit->setPosition(Vector3d(300, 100, 0));
+  exit->setSize(100);
+  exit->setFont("assets/imgs/font.png");
+  exit->setPosition(Vector3d(700, 100, 0));
   exit->setSelectAction(selectExit);
   exit->setUnselectAction(unselectExit);
   exit->setPressAction(pressExit);
@@ -268,16 +269,19 @@ GuiSelectableGroup			*ScoreManager::getGuiList()
       selGroup->setSelectAction(selectScore);
       selGroup->setUnselectAction(unselectScore);
       selGroup->setDeleteAction(deleteScore);
-      selGroup->setPosition(Vector3d(0, margin, 0));
+      selGroup->setPosition(Vector3d(0, -margin, 0));
       selGroup->setId(it->second->id);
 
-      player->setSize(30);
-      date->setSize(30);
-      score->setSize(30);
+      player->setSize(80);
+      date->setSize(80);
+      score->setSize(80);
+      player->setFont("assets/imgs/font.png");
+      date->setFont("assets/imgs/font.png");
+      score->setFont("assets/imgs/font.png");
 
       player->setPosition(Vector3d(0, 0, 0));
       // date->setPosition(Vector3d(0, margin + 30, 0));
-      score->setPosition(Vector3d(0, 30, 0));
+      score->setPosition(Vector3d(0, -80, 0));
 
       *player = it->second->player;
       // *date = it->second->date;
@@ -287,7 +291,7 @@ GuiSelectableGroup			*ScoreManager::getGuiList()
       // g->pushComponent(date);
       selGroup->pushComponent(score);
       scoreList->pushComponent(selGroup);
-      margin += 80;
+      margin += 200;
       ++it;
     }
   (void)date;

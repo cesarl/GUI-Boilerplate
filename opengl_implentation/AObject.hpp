@@ -4,7 +4,7 @@
 #include			<GL/gl.h>
 #include			<GL/glu.h>
 #include			<Clock.hpp>
-#include			<Color.hpp>
+#include			<MyColor.hpp>
 #include			<Game.hpp>
 #include			<GameClock.hpp>
 #include			<Image.hpp>
@@ -25,6 +25,10 @@ public:
   virtual void			setPosition(Vector3d const & v)
   {
     this->position_ = v;
+  }
+  virtual void			setRotation(Vector3d const & v)
+  {
+    this->rotation_ = v;
   }
 protected:
   Vector3d			position_;

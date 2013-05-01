@@ -16,6 +16,7 @@ SRCS		=	AScene.cpp		\
 			SceneManager.cpp	\
 			GuiComponent.cpp	\
 			ScoreManager.cpp	\
+			ImageManager.cpp	\
 			TextDrawer.cpp		\
 			Option.cpp		\
 			main.cpp		\
@@ -25,6 +26,7 @@ SRCS		=	AScene.cpp		\
 			Cube.cpp		\
 			Pyramide.cpp		\
 			MyGame.cpp		\
+			Text.cpp		\
 			scenes/MainMenu.cpp	\
 			scenes/NewGameMenu.cpp	\
 			scenes/ScoreMenu.cpp	\

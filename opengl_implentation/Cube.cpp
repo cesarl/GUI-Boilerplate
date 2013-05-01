@@ -1,27 +1,21 @@
+#include			<iostream> // for debug
 #include			"Object.hh"
 
 using namespace			Object;
 
 void				Cube::initialize(void)
 {
+  std::cout << " cube init " << std::endl;
 }
 
 void				Cube::update(gdl::GameClock const & gameClock, gdl::Input & input)
 {
-  this->rotation_.setX(((int)rotation_.getX() + 1) % 360);
-  (void)gameClock;
-  (void)input;
+  (void)(gameClock);
+  (void)(input);
 }
 
 void				Cube::draw(void)
 {
-  glPushMatrix();
-  glLoadIdentity();
-  glTranslatef(this->position_.getX(), this->position_.getY(), this->position_.getZ());
-
-  /// Rotation autour de l’axe X
-  glRotatef(this->rotation_.getX(), 1.0f, 0.0f, 0.0f);
-
   /// Ouverture d’un contexte de rendu
   glBegin(GL_QUADS);
 

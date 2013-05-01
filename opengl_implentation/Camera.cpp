@@ -1,7 +1,7 @@
 #include			"Camera.hh"
 
 Camera::Camera() :
-  position_(500.0f, 500.0f, -1000.0f),
+  position_(0.0f, 0.0f, 2000.0f),
   rotation_(0.0f, 0.0f, 0.0f)
 {}
 

@@ -17,6 +17,7 @@ void				Pyramide::draw(void)
 {
   glPushMatrix();
   glLoadIdentity();
+
   glTranslatef(this->position_.getX(), this->position_.getY(), this->position_.getZ());
 
   /// Rotation autour de l’axe Y

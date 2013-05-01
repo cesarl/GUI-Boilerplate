@@ -6,9 +6,15 @@ void				MyGame::initialize(void)
 {
 
   /// Creation du contexte OpenGL et de la fenetre
-
   window_.create();
   camera_.initialize();
+
+  /// Activation de la transparence
+
+  glEnable (GL_BLEND);
+  glActiveTexture(GL_TEXTURE0);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   sceneManager_ = SceneManager::getInstance();
   /// Ajout des objets heritant de AObject dans la liste
   /// Appel de la methode initialize des objets
@@ -48,12 +54,8 @@ void				MyGame::draw(void)
 
   /// Affichage des scenes actives && visibles
   this->sceneManager_->drawEvent();
-
   /// Affichage des elements textes
-   this->textDrawer_->draw();
-
-  /// Affichage du rendu dans la fenetre
-  this->window_.display();
+  this->textDrawer_->draw();
   if (!this->run_->getValue())
     this->unload();
 }

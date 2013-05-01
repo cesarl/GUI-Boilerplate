@@ -1,6 +1,8 @@
 #ifndef				__TEXT_DRAWER_HH__
 # define			__TEXT_DRAWER_HH__
 
+#include			<GL/gl.h>
+#include			<GL/glu.h>
 #include			<vector>
 #include			<Text.hpp>
 

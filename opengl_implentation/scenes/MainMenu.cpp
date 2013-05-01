@@ -4,14 +4,14 @@ static inline void			selectMenuItem(GuiComponent *c)
 {
   GuiSelectableText			*t = dynamic_cast<GuiSelectableText*>(c);
 
-  t->getText()->setColor(gdl::Color(255, 0, 255));
+  t->getText()->setColor(Color(255, 0, 255));
 }
 
 static inline void			unselectMenuItem(GuiComponent *c)
 {
   GuiSelectableText			*t = dynamic_cast<GuiSelectableText*>(c);
 
-  t->getText()->setColor(gdl::Color(0, 0, 0));
+  t->getText()->setColor(Color(0, 0, 0));
 }
 
 static inline void			pressExitMenuItem(GuiComponent *c)
@@ -51,13 +51,14 @@ MainMenu::MainMenu()
   std::string				text[] = {"New Game", "Load Game", "Scores", "Exit"};
   GuiSelectableText			*t;
 
-  this->gui_.setPosition(Vector3d(50, 150, 0));
+  this->gui_.setPosition(Vector3d(-700, 500, 1000));
   for (int i = 0; i < 4; ++i)
     {
       t = new GuiSelectableText;
-      t->setPosition(Vector3d(50, 70 * i, 0));
+      t->setFont("assets/imgs/font.png");
+      t->setPosition(Vector3d(50, - 300 * i, 0));
       t->setText(text[i]);
-      t->setSize(40);
+      t->setSize(150);
       t->setSelectAction(selectMenuItem);
       t->setUnselectAction(unselectMenuItem);
       switch (i)

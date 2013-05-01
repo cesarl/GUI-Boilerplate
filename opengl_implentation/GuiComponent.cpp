@@ -11,11 +11,10 @@ GuiComponent::GuiComponent() :
   parent_(NULL),
   selectable_(false),
   option_(NULL),
-  color_(gdl::Color(0,0,0)),
+  color_(Color(0,0,0)),
   font_(""),
   size_(20)
 {
-  this->drawer_ = TextDrawer::getInstance();
 }
 
 GuiComponent::~GuiComponent()
@@ -79,7 +78,7 @@ void					GuiComponent::saveOptionValue()
 void					GuiComponent::importOptionValue()
 {}
 
-void					GuiComponent::setColor(gdl::Color const & color)
+void					GuiComponent::setColor(Color const & color)
 {
   this->color_ = color;
 }
@@ -180,7 +179,7 @@ GuiText::GuiText(std::string const & val) :
   GuiComponent(),
   val_(val)
 {
-  this->text_.setText(this->val_);
+  this->text_ = this->val_;
 }
 
 
@@ -190,18 +189,18 @@ GuiText::~GuiText()
 void					GuiText::operator=(std::string const & str)
 {
   this->val_ = str;
-  this->text_.setText(this->val_);
+  this->text_ = this->val_;
   this->saveOptionValue();
 }
 
 void					GuiText::operator+=(std::string const & str)
 {
   this->val_ += str;
-  this->text_.setText(this->val_);
+  this->text_ = this->val_;
   this->saveOptionValue();
 }
 
-void					GuiText::setColor(gdl::Color const & color)
+void					GuiText::setColor(Color const & color)
 {
   this->color_ = color;
   this->text_.setColor(color);
@@ -211,12 +210,13 @@ void					GuiText::setFont(std::string const & font)
 {
   this->font_ = font;
   this->text_.setFont(font);
+  this->text_.initialize();
 }
 
 void					GuiText::setSize(int size)
 {
   this->size_ = size;
-  this->text_.setSize(size);
+  this->text_.setFontSize(size);
 }
 
 void					GuiText::draw(Vector3d *position)
@@ -226,9 +226,15 @@ void					GuiText::draw(Vector3d *position)
   vec = this->position_;
   if (position)
     vec += *position;
-  this->text_.setPosition(vec.getX(), vec.getY());
   this->text_.setColor(this->color_);
-  this->drawer_->push(&(this->text_));
+
+  glPushMatrix();
+  // glLoadIdentity();
+  glTranslatef(this->position_.getX(), this->position_.getY(), this->position_.getZ());
+
+  this->text_.draw();
+
+  glPopMatrix();
 }
 
 void					GuiText::saveOptionValue()
@@ -307,9 +313,15 @@ void					GuiNumber::draw(Vector3d *position)
   vec = this->position_;
   if (position)
     vec += *position;
-  this->text_.setPosition(vec.getX(), vec.getY());
   this->text_.setColor(this->color_);
-  this->drawer_->push(&(this->text_));
+
+  glPushMatrix();
+  // glLoadIdentity();
+  glTranslatef(this->position_.getX(), this->position_.getY(), this->position_.getZ());
+
+  this->text_.draw();
+
+  glPopMatrix();
 }
 
 void					GuiNumber::updateStr()
@@ -318,7 +330,7 @@ void					GuiNumber::updateStr()
 
   convert << this->nb_;
   this->val_ = convert.str();
-  this->text_.setText(this->val_);
+  this->text_ = this->val_;
 }
 
 int					GuiNumber::getVal() const
@@ -373,7 +385,14 @@ void					GuiSelectableText::draw(Vector3d *position)
   vec = this->position_;
   if (position)
     vec += *position;
-  this->text_.draw(&vec);
+
+  glPushMatrix();
+  // glLoadIdentity();
+  glTranslatef(this->position_.getX(), this->position_.getY(), this->position_.getZ());
+
+  this->text_.draw();
+
+  glPopMatrix();
 }
 
 void					GuiSelectableText::attachOption(Option *option)
@@ -395,7 +414,7 @@ void					GuiSelectableText::select(bool val)
     }
 }
 
-void					GuiSelectableText::setColor(gdl::Color const & color)
+void					GuiSelectableText::setColor(Color const & color)
 {
   this->text_.setColor(color);
 }
@@ -443,7 +462,14 @@ void					GuiSelectableNumber::draw(Vector3d *position)
   vec = this->position_;
   if (position)
     vec += *position;
-  this->nbr_.draw(&vec);
+
+  glPushMatrix();
+  // glLoadIdentity();
+  glTranslatef(this->position_.getX(), this->position_.getY(), this->position_.getZ());
+
+  this->nbr_.draw();
+
+  glPopMatrix();
 }
 
 void					GuiSelectableNumber::attachOption(Option *option)
@@ -465,7 +491,7 @@ void					GuiSelectableNumber::select(bool val)
     }
 }
 
-void					GuiSelectableNumber::setColor(gdl::Color const & color)
+void					GuiSelectableNumber::setColor(Color const & color)
 {
   this->nbr_.setColor(color);
 }
@@ -535,6 +561,11 @@ void					GuiSelectableGroup::draw(Vector3d *position)
   vec = this->position_;
   if (position)
     vec += *position;
+
+  glPushMatrix();
+  // glLoadIdentity();
+  glTranslatef(this->position_.getX(), this->position_.getY(), this->position_.getZ());
+
   if (this->list_.size() > 0)
     {
       it = this->list_.begin();
@@ -553,6 +584,7 @@ void					GuiSelectableGroup::draw(Vector3d *position)
 	  ++it;
 	}
     }
+  glPopMatrix();
 }
 
 void					GuiSelectableGroup::setHorizontal(bool val)
@@ -645,7 +677,7 @@ void					GuiSelectableGroup::selectFirst()
     ++this->selected_;
 }
 
-void					GuiSelectableGroup::setColor(gdl::Color const & color)
+void					GuiSelectableGroup::setColor(Color const & color)
 {
   t_iter				it;
 

@@ -33,8 +33,8 @@ int				main()
   scoreMenu.setName("scoreMenu");
 
   sceneManager->add(&gameScene);
-  gameScene.setActive(true);
-  gameScene.setVisible(true);
+  gameScene.setActive(false);
+  gameScene.setVisible(false);
   gameScene.setName("gameScene");
 
   game.run();

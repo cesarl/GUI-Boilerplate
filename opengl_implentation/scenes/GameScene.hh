@@ -5,9 +5,10 @@
 #include				<string>
 #include				"Primitives.hh"
 #include				"GuiComponent.hh"
-#include				"Object.hh"
+#include				"Primitives.hh"
 #include				"AScene.hh"
 #include				"ScoreManager.hh"
+#include				"Text.hh"
 
 class					GameScene : public AScene
 {
@@ -19,10 +20,9 @@ public:
   virtual void				receiveMessage(e_message type, bool activate);
   virtual void				receiveMessage(e_message type, void *data);
 private: //variables
-  Primitive::Triangle			triangle_;
-  Primitive::Rectangle			rectangle_;
-  Object::Pyramide			pyramide_;
-  Object::Cube				cube_;
+  Primitive::Sprite			sprite_;
+  Primitive::Rectangle			rec_;
+  Primitive::TextBlock			text_;
 };
 
 #endif					// _GAME_SCENE_HH__
