@@ -17,7 +17,7 @@ static inline void			unselectMenuItem(GuiComponent *c)
 
 static inline void			pressExitMenuItem(GuiComponent *c)
 {
-  SceneManager::getInstance()->handleMessage(MSG_EXITAPP, false, "");
+  EventManager::getInstance()->stop();
   (void)c;
 }
 
@@ -47,31 +47,6 @@ static inline void			pressScoreMenuItem(GuiComponent *c)
 
 MainMenu::MainMenu()
 {
-  std::string				text[] = {"New Game", "Load Game", "Scores", "Exit"};
-  GuiSelectableText			*t;
-
-  this->gui_.setPosition(Vector3d(50, 150, 0));
-  for (int i = 0; i < 4; ++i)
-    {
-      t = new GuiSelectableText;
-      t->setPosition(Vector3d(50, 70 * i, 0));
-      t->setupText(text[i], FontManager::getInstance()->load("assets/fonts/LilitaOne-Regular.ttf", 40));
-      t->setSelectAction(selectMenuItem);
-      t->setUnselectAction(unselectMenuItem);
-      switch (i)
-	{
-	case 0:
-	  t->setPressAction(pressNewGameMenuItem);
-	  break;
-	case 2:
-	  t->setPressAction(pressScoreMenuItem);
-	  break;
-	case 3:
-	  t->setPressAction(pressExitMenuItem);
-	  break;
-	}
-      this->gui_.pushComponent(t);
-    }
 }
 
 MainMenu::~MainMenu()
@@ -99,8 +74,39 @@ void					MainMenu::receiveMessage(e_message type, bool activate)
   (void)activate;
 }
 
-void					MainMenu::receiveMessage(e_message type, void *data)
+bool					MainMenu::initialize()
 {
-  (void)type;
-  (void)data;
+  std::string				text[] = {"New Game", "Load Game", "Scores", "Exit"};
+  GuiSelectableText			*t;
+
+  this->gui_.setPosition(Vector3d(50, 150, 0));
+  for (int i = 0; i < 4; ++i)
+    {
+      t = new GuiSelectableText;
+      if (!t)
+	return false;
+      t->setPosition(Vector3d(50, 70 * i, 0));
+      t->setupText(text[i], FontManager::getInstance()->load("assets/fonts/LilitaOne-Regular.ttf", 40));
+      t->setSelectAction(selectMenuItem);
+      t->setUnselectAction(unselectMenuItem);
+      switch (i)
+	{
+	case 0:
+	  t->setPressAction(pressNewGameMenuItem);
+	  break;
+	case 2:
+	  t->setPressAction(pressScoreMenuItem);
+	  break;
+	case 3:
+	  t->setPressAction(pressExitMenuItem);
+	  break;
+	}
+      this->gui_.pushComponent(t);
+    }
+  return true;
+}
+
+void					MainMenu::uninitialize()
+{
+
 }

@@ -6,11 +6,8 @@
 class					Option
 {
 public:
-  Option(const std::string & key);
+  Option();
   virtual ~Option();
-  const std::string			&getKey() const;
-protected:
-  std::string				key_;
 };
 
 #endif					// __OPTION_H__

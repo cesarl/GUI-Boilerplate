@@ -6,8 +6,6 @@
 #include				"AScene.hh"
 #include				"GuiComponent.hh"
 
-#define					MAX_CHOICE 3
-
 class					SceneMenu : public AScene
 {
 public:
@@ -17,16 +15,13 @@ public:
   virtual void				draw(ALLEGRO_EVENT *event);
   virtual void				input(ALLEGRO_EVENT *event);
   virtual void				receiveMessage(e_message type, bool activate);
-  virtual void				receiveMessage(e_message type, void *data);
+  virtual bool				initialize();
+  virtual void				uninitialize();
 private: //member functions
   void					p_rollMenu(int direction);
 private: //variables
   GuiSelectableGroup			gui_;
-  // Entity				background_;
-  // Entity				title_;
   int					selectedChoice_;
-  // Entity				choices_[MAX_CHOICE];
-  // Entity				particules_;
 };
 
 #endif					// __SCENE_MENU_HH__

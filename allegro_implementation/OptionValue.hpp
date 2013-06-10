@@ -7,8 +7,8 @@ template				<typename T>
 class					OptionValue : public Option
 {
 public:
-  OptionValue<T>(std::string & key, T val) :
-  Option(key),
+  OptionValue<T>(T val) :
+  Option(),
     val_(val)
   {}
 

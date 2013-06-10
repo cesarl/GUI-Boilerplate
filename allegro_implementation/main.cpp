@@ -6,22 +6,13 @@
 #include				"MainMenu.hh"
 #include				"NewGameMenu.hh"
 #include				"ScoreMenu.hh"
-#include				"FontManager.hh"
-#include				"ScoreManager.hh"
-#include				"OptionManager.hpp"
-
-static ALLEGRO_DISPLAY			*init(int width, int height)
-{
-  ALLEGRO_DISPLAY			*display;
-
-  assert(al_init());
-  assert(display = al_create_display(width, height));
-  return display;
-}
+#include				"MainManager.hh"
 
 int					main()
 {
-  ALLEGRO_DISPLAY			*display = init(64 * 20, 64 * 10);
+  if (!MainManager::getInstance()->initialize(50 * 20, 50 * 20))
+    return -1;
+
   SceneManager				*sceneManager;
   EventManager				*eventManager;
   OptionManager				*optionManager;
@@ -41,22 +32,24 @@ int					main()
   sceneManager->add(&mainMenu, LOW);
   mainMenu.setActive(true);
   mainMenu.setVisible(true);
-  mainMenu.setDisplay(display);
   mainMenu.setName("mainMenu");
 
   sceneManager->add(&newGameMenu);
   newGameMenu.setActive(false);
   newGameMenu.setVisible(false);
-  newGameMenu.setDisplay(display);
   newGameMenu.setName("newGameMenu");
 
   sceneManager->add(&scoreMenu);
   scoreMenu.setActive(false);
   scoreMenu.setVisible(false);
-  scoreMenu.setDisplay(display);
   scoreMenu.setName("scoreMenu");
 
+  if (!sceneManager->initialize())
+    return -1;
+
   eventManager->play();
-  al_destroy_display(display);
+
+  MainManager::getInstance()->deInitialize();
+
   return (1);
 }

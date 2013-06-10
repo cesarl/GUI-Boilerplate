@@ -4,14 +4,23 @@
 
 FontManager::FontManager()
 {
-  al_init_font_addon();
-  if (!al_init_ttf_addon())
-    std::cerr << "Error - FontManager : init font addon error" << std::endl;
 }
 
 //dtor
 
 FontManager::~FontManager()
+{}
+
+
+bool					FontManager::initialize()
+{
+  al_init_font_addon();
+  if (!al_init_ttf_addon())
+    return false;
+  return true;
+}
+
+void					FontManager::uninitialize()
 {
   t_iter				it;
 
@@ -20,12 +29,11 @@ FontManager::~FontManager()
       al_destroy_font(it->second);
       this->collection_.erase(it);
     }
-  // provoque segfault ...
+  // cause of segfault
   // al_shutdown_ttf_addon();
   al_shutdown_font_addon();
 }
 
-// return the singleton FontManager
 
 FontManager				*FontManager::getInstance()
 {
@@ -38,20 +46,18 @@ FontManager				*FontManager::getInstance()
 ALLEGRO_FONT				*FontManager::load(std::string const & path, int size)
 {
   ALLEGRO_FONT				*tmp;
-  std::string				key;
+  std::stringstream			key;
 
-  key = path;
-  key += "-";
-  key += size;
+  key << path << "-" << size;
   if ((tmp = this->get(path, size)))
     return tmp;
   tmp = al_load_font(path.c_str(), size, 0);
   if (!tmp)
     {
-      std::cerr << "Error - FontManager : loading " << key << " failed" << std::endl;
+      std::cerr << "Error - FontManager : loading " << key.str() << " failed" << std::endl;
       return NULL;
     }
-  this->collection_.insert(t_pair(key, tmp));
+  this->collection_.insert(t_pair(key.str(), tmp));
   return tmp;
 }
 
@@ -83,7 +89,7 @@ ALLEGRO_FONT				*FontManager::get(std::string const & path, int size)
   key = path;
   key += "-";
   key += size;
-  it = this->collection_.find(key);
+  it = this->collection_.find(path);
   if (it != this->collection_.end())
     return it->second;
   return NULL;

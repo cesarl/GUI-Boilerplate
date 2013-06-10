@@ -28,12 +28,6 @@ public:
   bool					operator==(const Vector3d& other) const;
   bool					operator!=(const Vector3d& other) const;
   Vector3d				&operator=(const Vector3d& other);
-  double				distance(const Vector3d& other);
-  double				length();
-  double				dotProduct(const Vector3d& other);
-  Vector3d				crossProduct(const Vector3d& other);
-  Vector3d				normal();
-  double				angle(const Vector3d& other);
 };
 
 #endif					// __VECTOR3D_H__

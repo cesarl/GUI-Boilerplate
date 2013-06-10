@@ -40,41 +40,6 @@ inline void				unselectSubMenuItem(GuiComponent *c)
 
 SceneMenu::SceneMenu()
 {
-  std::string				text[] = {"coucou", "comment", "ca", "va", "mon", "ami", "?", "moi", "ca", "va", "tres", "bien"};
-  std::string				subText[] = {"Temple", "Jungle", "Facility", "Random"};
-  GuiSelectableText			*t;
-  GuiSelectableGroup			*g;
-
-  this->gui_.setPosition(Vector3d(50, 150, 0));
-  for (int i = 0; i < 12; ++i)
-    {
-      if (i == 3)
-	{
-	  g = new GuiSelectableGroup;
-	  g->setHorizontal(true);
-	  for (int j = 0; j < 4; ++j)
-	    {
-	      t = new GuiSelectableText;
-	      t->setPosition(Vector3d(200 * j, 0, 0));
-	      t->setupText(subText[j], FontManager::getInstance()->load("assets/fonts/LilitaOne-Regular.ttf", 40));
-	      t->setSelectAction(selectSubMenuItem);
-	      t->setUnselectAction(unselectSubMenuItem);
-	      g->pushComponent(t);
-	    }
-	  g->setSelectAction(selectMenuItem);
-	  this->gui_.pushComponent(g);
-	  g->setPosition(Vector3d(50, 70 * i, 0));
-	}
-      else
-	{
-	  t = new GuiSelectableText;
-	  t->setPosition(Vector3d(50, 70 * i, 0));
-	  t->setupText(text[i], FontManager::getInstance()->load("assets/fonts/LilitaOne-Regular.ttf", 40));
-	  t->setSelectAction(selectMenuItem);
-	  t->setUnselectAction(unselectMenuItem);
-	  this->gui_.pushComponent(t);
-	}
-    }
 }
 
 SceneMenu::~SceneMenu()
@@ -94,34 +59,6 @@ void					SceneMenu::draw(ALLEGRO_EVENT *event)
 void					SceneMenu::input(ALLEGRO_EVENT *event)
 {
   this->gui_.event(event);
-  // if (event->type == ALLEGRO_EVENT_KEY_DOWN)
-  //   {
-  //     switch (event->keyboard.keycode)
-  // 	{
-  // 	case ALLEGRO_KEY_UP:
-  // 	  this->p_rollMenu(-1);
-  // 	  break;
-  // 	case ALLEGRO_KEY_DOWN:
-  // 	  this->p_rollMenu(1);
-  // 	  break;
-  // 	case ALLEGRO_KEY_ENTER:
-  // 	  if (this->selectedChoice_ == 2)
-  // 	    {
-  // 	      this->sendMessage(MSG_ACTIVE, false, this->name_);
-  // 	      this->sendMessage(MSG_VISIBLE, false, this->name_);
-  // 	      this->sendMessage(MSG_EXITAPP, false, "");
-  // 	    }
-  // 	  else if (this->selectedChoice_ == 0)
-  // 	    {
-  // 	      this->sendMessage(MSG_ACTIVE, false, this->name_);
-  // 	      this->sendMessage(MSG_VISIBLE, false, this->name_);
-  // 	      this->sendMessage(MSG_ACTIVE, true, "mainGame");
-  // 	      this->sendMessage(MSG_VISIBLE, true, "mainGame");
-  // 	      this->sendMessage(NEW_GAME, true, "mainGame");
-  // 	    }
-  // 	  break;
-  // 	}
-  // }
 }
 
 void					SceneMenu::receiveMessage(e_message type, bool activate)
@@ -130,17 +67,54 @@ void					SceneMenu::receiveMessage(e_message type, bool activate)
   (void)activate;
 }
 
-void					SceneMenu::receiveMessage(e_message type, void *data)
+bool					SceneMenu::initialize()
 {
-  (void)type;
-  (void)data;
+  std::string				text[] = {"coucou", "comment", "ca", "va", "mon", "ami", "?", "moi", "ca", "va", "tres", "bien"};
+  std::string				subText[] = {"Temple", "Jungle", "Facility", "Random"};
+  GuiSelectableText			*t;
+  GuiSelectableGroup			*g;
+
+  this->gui_.setPosition(Vector3d(50, 150, 0));
+  for (int i = 0; i < 12; ++i)
+    {
+      if (i == 3)
+	{
+	  g = new GuiSelectableGroup;
+	  if (!g)
+	    return false;
+	  g->setHorizontal(true);
+	  for (int j = 0; j < 4; ++j)
+	    {
+	      t = new GuiSelectableText;
+	      if (!t)
+		return false;
+	      t->setPosition(Vector3d(200 * j, 0, 0));
+	      t->setupText(subText[j], FontManager::getInstance()->load("assets/fonts/LilitaOne-Regular.ttf", 40));
+	      t->setSelectAction(selectSubMenuItem);
+	      t->setUnselectAction(unselectSubMenuItem);
+	      g->pushComponent(t);
+	    }
+	  g->setSelectAction(selectMenuItem);
+	  this->gui_.pushComponent(g);
+	  g->setPosition(Vector3d(50, 70 * i, 0));
+	}
+      else
+	{
+	  t = new GuiSelectableText;
+	  if (!t)
+	    return false;
+	  t->setPosition(Vector3d(50, 70 * i, 0));
+	  t->setupText(text[i], FontManager::getInstance()->load("assets/fonts/LilitaOne-Regular.ttf", 40));
+	  t->setSelectAction(selectMenuItem);
+	  t->setUnselectAction(unselectMenuItem);
+	  this->gui_.pushComponent(t);
+	}
+    }
+  return true;
 }
 
-void					SceneMenu::p_rollMenu(int direction)
+void					SceneMenu::uninitialize()
 {
-  this->selectedChoice_ += direction;
-  if (this->selectedChoice_ >= MAX_CHOICE)
-    this->selectedChoice_ = 0;
-  else if (this->selectedChoice_ < 0)
-    this->selectedChoice_ = MAX_CHOICE - 1;
+
 }
+

@@ -10,7 +10,21 @@ class					OptionManager
 {
 public:
   ~OptionManager()
-  {}
+  {
+    t_iter				it;
+
+    it = this->list_.begin();
+    while (it != this->list_.end())
+      {
+	delete it->second;
+	++it;
+      }
+    this->list_.clear();
+  }
+  bool					initialize()
+  {
+    return true;
+  }
   static OptionManager			*getInstance()
   {
     static OptionManager		that;
@@ -21,8 +35,12 @@ public:
   void					create(std::string key, T const & value)
   {
     Option				*tmp;
+    t_iter				it;
 
-    tmp = new OptionValue<T>(key, value);
+    it = this->list_.find(key);
+    if (it != this->list_.end())
+      return;
+    tmp = new OptionValue<T>(value);
     this->list_.insert(t_pair(key, tmp));
   }
 

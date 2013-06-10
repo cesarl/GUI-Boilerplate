@@ -12,7 +12,9 @@ LDFLAGS		=	-L/usr/lib -lallegro -lallegro_dialog -lallegro_primitives -lallegro_
 
 INC		=	-I/usr/include/allegro5
 
-SRCS		=	EventManager.cpp \
+SRCS		=	MainManager.cpp \
+			ImageManager.cpp \
+			EventManager.cpp \
 			SceneManager.cpp \
 			AScene.cpp \
 			Vector3d.cpp \

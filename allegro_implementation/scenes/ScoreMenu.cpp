@@ -3,19 +3,6 @@
 
 ScoreMenu::ScoreMenu()
 {
-  ScoreManager				*scoreManager;
-
-  scoreManager = ScoreManager::getInstance();
-  scoreManager->setPath("./scores");
-  if (!scoreManager->load())
-    {
-      std::cerr << "score loading error" << std::endl;
-    }
-  // scoreManager->registerScore(1234, "Cesar");
-  // scoreManager->registerScore(2345, "Julie");
-  // scoreManager->registerScore(3456, "Marcus");
-  this->gui_ = scoreManager->getGuiList();
-  this->gui_->setPosition(Vector3d(50, 50, 0));
 }
 
 ScoreMenu::~ScoreMenu()
@@ -50,8 +37,21 @@ void					ScoreMenu::receiveMessage(e_message type, bool activate)
   (void)activate;
 }
 
-void					ScoreMenu::receiveMessage(e_message type, void *data)
+bool					ScoreMenu::initialize()
 {
-  (void)type;
-  (void)data;
+  ScoreManager				*scoreManager;
+
+  scoreManager = ScoreManager::getInstance();
+  scoreManager->setPath("./scores");
+  if (!scoreManager->load())
+    {
+      std::cerr << "score loading error" << std::endl;
+    }
+  scoreManager->registerScore(1234, "Cesar");
+  this->gui_ = scoreManager->getGuiList();
+  this->gui_->setPosition(Vector3d(50, 50, 0));
+  return true;
 }
+
+void					ScoreMenu::uninitialize()
+{}

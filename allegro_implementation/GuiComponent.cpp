@@ -207,7 +207,7 @@ void					GuiText::saveOptionValue()
 {
   if (!this->option_)
     return;
-  OptionManager::getInstance()->setOption<std::string>(this->option_->getKey(), this->val_);
+  static_cast<OptionValue<std::string>*>(this->option_)->setValue(this->val_);
 }
 
 void					GuiText::importOptionValue()
@@ -307,7 +307,7 @@ void					GuiNumber::saveOptionValue()
 {
   if (!this->option_)
     return;
-  OptionManager::getInstance()->setOption<int>(this->option_->getKey(), this->val_);
+  static_cast<OptionValue<int>*>(this->option_)->setValue(this->val_);
 }
 
 void					GuiNumber::importOptionValue()
