@@ -1,7 +1,9 @@
 #ifndef					__SCORE_MANAGER_H__
 # define				__SCORE_MANAGER_H__
 
-#include				"GuiComponent.hh"
+#include				"GuiSelectableGroup.hh"
+#include				"GuiSelectableText.hh"
+#include				"GuiNumber.hh"
 #include				"FontManager.hh"
 #include				<fstream>
 #include				<iostream>

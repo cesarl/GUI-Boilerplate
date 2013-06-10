@@ -6,7 +6,7 @@ RM		=	rm -f
 
 CPPFLAGS	=	-W -Wextra -Wall -Werror
 
-CPPFLAGS	+=	-Icomponents -Iscenes -Imanagers -Iheaders -I.
+CPPFLAGS	+=	-Icomponents -Iscenes -Imanagers -Iheaders -Igui -I.
 
 LDFLAGS		=	-L/usr/lib -lallegro -lallegro_dialog -lallegro_primitives -lallegro_ttf -lallegro_font -lallegro_image
 
@@ -16,16 +16,23 @@ SRCS		=	MainManager.cpp \
 			ImageManager.cpp \
 			EventManager.cpp \
 			SceneManager.cpp \
-			AScene.cpp \
-			Vector3d.cpp \
-			GuiComponent.cpp \
 			FontManager.cpp \
 			ScoreManager.cpp \
+			Option.cpp \
+			AScene.cpp \
+			Vector3d.cpp \
+			gui/GuiComponent.cpp \
+			gui/GuiNumber.cpp \
+			gui/GuiRangeNumber.cpp \
+			gui/GuiSelectableGroup.cpp \
+			gui/GuiSelectable.cpp \
+			gui/GuiSelectableNumber.cpp \
+			gui/GuiSelectableText.cpp \
+			gui/GuiText.cpp \
 			scenes/SceneMenu.cpp \
 			scenes/MainMenu.cpp \
 			scenes/NewGameMenu.cpp \
 			scenes/ScoreMenu.cpp \
-			Option.cpp \
 			main.cpp
 
 OBJS		=	$(SRCS:.cpp=.o)

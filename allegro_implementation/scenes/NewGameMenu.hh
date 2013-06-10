@@ -4,7 +4,11 @@
 #include				<iostream> // for debug - to clear
 #include				<string>
 #include				"AScene.hh"
-#include				"GuiComponent.hh"
+#include				"GuiSelectableGroup.hh"
+#include				"GuiSelectableText.hh"
+#include				"GuiSelectableNumber.hh"
+#include				"GuiRangeNumber.hh"
+
 
 class					NewGameMenu : public AScene
 {
